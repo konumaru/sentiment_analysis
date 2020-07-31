@@ -1,0 +1,74 @@
+var app_id = 1451925438 // 取得したいアプリのapp_idに変更する
+var sp_url = 'https://docs.google.com/spreadsheets/d/XXXXXXXXXXXXXXXXXX/edit?usp=sharing'; // 書き込みたいスプレッドシートに変更する
+var spreadsheet = SpreadsheetApp.openByUrl(sp_url);
+var sheet = spreadsheet.getSheetByName('sheet1'); // 書き込みたいシート名に変更する
+
+// Namespaceを取得する
+var atomNS = XmlService.getNamespace('http://www.w3.org/2005/Atom');
+var appleNS = XmlService.getNamespace('http://itunes.apple.com/rss');
+
+function getReview() {
+  _writeReview(_getEntries())
+  _writename()
+}
+
+/*
+ * XMLからentryの配列を取得する
+ */
+function _getEntries() {
+  var entries = [];
+  // 1ページから10ページまでを取得する ※1ページ 50件 ※Apple は10ページまでしか保証しない
+  for(var i=1; i<=10; i++){
+    var xml_url = "https://itunes.apple.com/jp/rss/customerreviews/id="+app_id+"/sortBy=mostRecent/page="+i+"/xml"
+    var response = UrlFetchApp.fetch(xml_url).getContentText();
+    var xml = XmlService.parse(response);
+    var feed = xml.getRootElement();
+
+    Array.prototype.push.apply(entries, feed.getChildren('entry',atomNS));
+  }
+
+  return entries;
+  // 配列を逆順に(日付の古い順)
+  // return entries.reverse();
+}
+
+
+function _writename(){
+  var sheet =  spreadsheet.getSheetByName('sheet1');
+  sheet.getRange(1, 1).setValue("update");
+  sheet.getRange(1, 2).setValue("title");
+  sheet.getRange(1, 3).setValue("id");
+  sheet.getRange(1, 4).setValue("content");
+  sheet.getRange(1, 5).setValue("voteSum");
+  sheet.getRange(1, 6).setValue("voteCount");
+  sheet.getRange(1, 7).setValue("rating");
+  sheet.getRange(1, 8).setValue("version");
+  sheet.getRange(1, 9).setValue("name");
+  sheet.getRange(1, 10).setValue("url");
+
+}
+
+/*
+ * スプレッドシートにentryの配列を書き込む
+ */
+function _writeReview(entries) {
+  // 1行目から始める
+  var row = 2;
+  for (var idx in entries) {
+    sheet.getRange(row, 1).setValue(entries[idx].getChild('updated',atomNS).getText());
+    sheet.getRange(row, 2).setValue(entries[idx].getChild('id',atomNS).getText());
+    sheet.getRange(row, 3).setValue(entries[idx].getChild('title',atomNS).getText());
+    sheet.getRange(row, 4).setValue(entries[idx].getChild('content',atomNS).getText());
+
+    sheet.getRange(row, 5).setValue(entries[idx].getChild('voteSum',appleNS).getText());
+    sheet.getRange(row, 6).setValue(entries[idx].getChild('voteCount',appleNS).getText());
+    sheet.getRange(row, 7).setValue(entries[idx].getChild('rating',appleNS).getText());
+    sheet.getRange(row, 8).setValue(entries[idx].getChild('version',appleNS).getText());
+
+    var author = entries[idx].getChild('author',atomNS);
+    sheet.getRange(row, 9).setValue(author.getChild('name',atomNS).getText());
+    sheet.getRange(row, 10).setValue(author.getChild('uri',atomNS).getText());
+
+    row++
+  }
+}
