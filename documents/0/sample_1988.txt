@@ -1,0 +1,1 @@
+Stupid auto refreshIt auto refresh by itself, and all the bottom news just gone. I would click show more... and it’s all not there. I am left with just few new news. Even when I put background app refresh to never, it still auto refresh. Stupid...really stupid.

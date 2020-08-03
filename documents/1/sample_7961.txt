@@ -1,0 +1,1 @@
+iphone11proで感度が悪いDocomoのMVNOにてSO-04Jで使っていた時は問題なくチェックイン出来ていた場所で、Y!mobileのiphone11proで使うとチェックイン出来ない。iOSアプリの性能が悪いのでしょうか？

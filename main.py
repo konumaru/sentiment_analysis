@@ -21,9 +21,9 @@ def main():
         grouped_df['content'] = grouped_df['content'].apply(lambda x: x.replace('\n', ''))
         grouped_df['all_content'] = grouped_df['id'].str.strip() + grouped_df['content'].str.strip()
 
-        grouped_df['all_content'].to_csv(
-            dst_filepath, header=None, index=None, sep=' ', encoding="utf-8"
-        )
+        for i, (idx, txt) in enumerate(grouped_df['all_content'].items()):
+            with open(os.path.join(dst_dir, f'sample_{idx}.txt'), 'w') as f:
+                f.write(str(txt))
 
     shutil.make_archive(export_dir, 'zip', root_dir=export_dir)
 

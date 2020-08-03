@@ -1,0 +1,1 @@
+bluetoothが切れます音楽をbluetooth で聴きながら使うと、bluetooth が切れて、音楽がiphone から流れてしまいます。仕様を変えて欲しいです。
